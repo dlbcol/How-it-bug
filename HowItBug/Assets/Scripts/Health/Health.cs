@@ -19,6 +19,8 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (IsDead) return;
+
         CurrentHealth = Mathf.Clamp(CurrentHealth - damage, 0, Entity.MaxHealth);
         NotifyHealthChanged();
 

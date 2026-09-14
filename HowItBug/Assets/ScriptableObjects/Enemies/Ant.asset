@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   _name: Ant
   _maxHealth: 50
+  _enemyPrefab: {fileID: 4385692865620307443, guid: 43d9a7fd443ef0842bc1a4a4202d1498, type: 3}
+  _corpsePrefab: {fileID: 426432858774044831, guid: 4a6e9b6ff77909b438587851048869e5, type: 3}

@@ -14,16 +14,8 @@ public class HealthUI : MonoBehaviour
     private void Awake()
     {
         _health = GetComponentInParent<Health>();
-    }
-
-    private void OnEnable()
-    {
         _health.OnHealthChanged += UpdateHealthBar;
-    }
 
-    private void OnDisable()
-    {
-        _health.OnHealthChanged -= UpdateHealthBar;
     }
 
     private void UpdateHealthBar(float currentHealth, IEntity entity)
