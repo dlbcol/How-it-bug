@@ -7,8 +7,6 @@ public class EnemyController : MonoBehaviour
     public EnemyData Data;
     public event Action<EnemyController> OnDeath;
 
-
-
     private Health _health;
 
     private void Awake()

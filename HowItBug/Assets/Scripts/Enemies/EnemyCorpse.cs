@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class EnemyCorpse : MonoBehaviour
 {
+    // TODO: Stop timer when player picks up corpse
+    // TODO: Reset timer when player drops corpse
+
     public EnemyData Data;
 
     public event Action<EnemyCorpse> OnCorpseDespawned;

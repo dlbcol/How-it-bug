@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class HealthUI : MonoBehaviour
 {
+    //TODO: Show health bar only while player sees enemy
+
     [SerializeField] private TextMeshProUGUI _nameText;
     [SerializeField] private TextMeshProUGUI _healthText;
     [SerializeField] private Image _healthBar;
