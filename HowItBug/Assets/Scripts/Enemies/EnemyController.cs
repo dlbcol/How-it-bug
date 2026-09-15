@@ -4,10 +4,9 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
 
-    public EnemyData Data => _data;
+    public EnemyData Data;
     public event Action<EnemyController> OnDeath;
 
-    [SerializeField] private EnemyData _data;
 
 
     private Health _health;
@@ -28,7 +27,7 @@ public class EnemyController : MonoBehaviour
 
     public void Initialize()
     {
-        _health.Initialize(_data);
+        _health.Initialize(Data);
     }
 
 }

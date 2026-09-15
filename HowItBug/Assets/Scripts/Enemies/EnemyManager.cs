@@ -63,6 +63,17 @@ public class EnemyManager : MonoBehaviour
         controller.Initialize();
     }
 
+    public void OnEnemyDeath(EnemyController controller)
+    {
+        controller.OnDeath -= OnEnemyDeath;
+        _activeEnemies.Remove(controller);
+
+        controller.gameObject.SetActive(false);
+        _enemiesPool[controller.Data].Enqueue(controller.gameObject);
+
+        SpawnCorpse(controller.Data);
+    }
+
     public void SpawnCorpse(EnemyData enemyData)
     {
         GameObject corpse;
@@ -75,16 +86,17 @@ public class EnemyManager : MonoBehaviour
         {
             corpse = Instantiate(enemyData.CorpsePrefab, _corpsesContainer.transform);
         }
+
+        EnemyCorpse corpseController = corpse.GetComponent<EnemyCorpse>();
+        corpseController.Initialize();
+        corpseController.OnCorpseDespawned += OnCorpseDespawned;
     }
 
-    public void OnEnemyDeath(EnemyController controller)
+    public void OnCorpseDespawned(EnemyCorpse corpse)
     {
-        controller.OnDeath -= OnEnemyDeath;
-        _activeEnemies.Remove(controller);
-
-        controller.gameObject.SetActive(false);
-        _enemiesPool[controller.Data].Enqueue(controller.gameObject);
-
-        SpawnCorpse(controller.Data);
+        corpse.OnCorpseDespawned -= OnCorpseDespawned;
+        corpse.gameObject.SetActive(false);
+        _corpsesPool[corpse.Data].Enqueue(corpse.gameObject);
     }
+
 }
