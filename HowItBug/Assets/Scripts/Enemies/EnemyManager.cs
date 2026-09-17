@@ -15,6 +15,11 @@ public class EnemyManager : MonoBehaviour
 
     private HashSet<EnemyController> _activeEnemies = new();
 
+    public void TestSpawn(EnemyData enemyData)
+    {
+        SpawnEnemy(enemyData, new(0, 0, 0));
+    }
+
     private void Start()
     {
         InitializePool();
@@ -43,7 +48,7 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    public void SpawnEnemy(EnemyData enemyData)
+    public void SpawnEnemy(EnemyData enemyData, Vector3 position)
     {
         GameObject enemy;
         if (_enemiesPool[enemyData].Any())
@@ -56,6 +61,7 @@ public class EnemyManager : MonoBehaviour
             enemy = Instantiate(enemyData.EnemyPrefab, _enemiesContainer.transform);
         }
 
+        enemy.transform.position = position;
         EnemyController controller = enemy.GetComponent<EnemyController>();
         _activeEnemies.Add(controller);
 
@@ -71,10 +77,10 @@ public class EnemyManager : MonoBehaviour
         controller.gameObject.SetActive(false);
         _enemiesPool[controller.Data].Enqueue(controller.gameObject);
 
-        SpawnCorpse(controller.Data);
+        SpawnCorpse(controller.Data, controller.gameObject.transform.position);
     }
 
-    public void SpawnCorpse(EnemyData enemyData)
+    public void SpawnCorpse(EnemyData enemyData, Vector3 position)
     {
         GameObject corpse;
         if (_corpsesPool[enemyData].Any())
@@ -87,6 +93,7 @@ public class EnemyManager : MonoBehaviour
             corpse = Instantiate(enemyData.CorpsePrefab, _corpsesContainer.transform);
         }
 
+        corpse.transform.position = position;
         EnemyCorpse corpseController = corpse.GetComponent<EnemyCorpse>();
         corpseController.Initialize();
         corpseController.OnCorpseDespawned += OnCorpseDespawned;

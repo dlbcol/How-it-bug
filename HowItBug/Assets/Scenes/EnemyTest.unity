@@ -348,7 +348,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 135030324}
         m_TargetAssemblyTypeName: EnemyManager, Assembly-CSharp
-        m_MethodName: SpawnEnemy
+        m_MethodName: TestSpawn
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: ceac357c5bf3e1641a3a49872256943d, type: 2}
@@ -993,11 +993,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6e93c883c71741478a3caf212126caa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FreeFlyController
-  moveSpeed: 10
-  fastMoveMultiplier: 2.5
-  mouseSensitivity: 100
-  _xRotation: 0
-  _yRotation: 0
 --- !u!1 &1841195740
 GameObject:
   m_ObjectHideFlags: 0
