@@ -13,10 +13,7 @@ GameObject:
   - component: {fileID: 3693706074200544252}
   - component: {fileID: 2724559449782586954}
   - component: {fileID: 8875972100289910771}
-  - component: {fileID: -4105575847423742231}
-  - component: {fileID: -5272537320170297645}
   - component: {fileID: 4295858316121336083}
-  - component: {fileID: 6206919570198065528}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -146,37 +143,6 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &-4105575847423742231
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1183055925335466268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e747f11e1b2bc8b43a75d8debe786879, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RpcTest
-  ShowTopMostFoldoutHeaderGroup: 1
---- !u!114 &-5272537320170297645
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1183055925335466268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fb0ed295c2bc3f4c80a96d0baa6c2fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HelloWorld.HelloWorldPlayer
-  ShowTopMostFoldoutHeaderGroup: 1
-  Position:
-    UpdateTraits:
-      MinSecondsBetweenUpdates: 0
-      MaxSecondsBetweenUpdates: 0
-    m_InternalValue: {x: 0, y: 0, z: 0}
 --- !u!114 &4295858316121336083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,15 +189,3 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &6206919570198065528
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1183055925335466268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0faaaede0f059a44b94243df014ac65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NetworkTransformTest

@@ -500,9 +500,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 439270707}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecc9a9838d89feb4e892d1e8badb1147, type: 3}
+  m_Script: {fileID: 11500000, guid: e7c7e9f042ebd284698790226ca7b995, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HelloWorldManager
+  m_EditorClassIdentifier: Assembly-CSharp::HowItBugSessionManager
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
