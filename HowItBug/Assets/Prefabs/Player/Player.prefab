@@ -153,6 +153,7 @@ GameObject:
   - component: {fileID: 4295858316121336083}
   - component: {fileID: 629257258136178272}
   - component: {fileID: 761254421072525}
+  - component: {fileID: -2153918334816744230}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -377,3 +378,19 @@ MonoBehaviour:
   controller: {fileID: 629257258136178272}
   verticalVelocity: 0
   rotationX: 0
+--- !u!114 &-2153918334816744230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1183055925335466268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ef51df67c33d7e4d900bef7bf3f58ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPhysicsPush
+  pushForce: 1.5
+  pushableLayers:
+    serializedVersion: 2
+    m_Bits: 64
