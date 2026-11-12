@@ -17,14 +17,19 @@ public class HealthUI : MonoBehaviour
     {
         _health = GetComponentInParent<Health>();
         _health.OnHealthChanged += UpdateHealthBar;
+        UpdateHealthBar(_health.CurrentHealth.Value, _health.Entity);
+    }
 
+    private void OnDestroy()
+    {
+        _health.OnHealthChanged -= UpdateHealthBar;
     }
 
     private void UpdateHealthBar(float currentHealth, IEntity entity)
     {
-        _nameText.text = entity.Name;
-        _healthBar.fillAmount = currentHealth / entity.MaxHealth;
-        _healthText.text = $"{currentHealth}/{entity.MaxHealth}";
+        _nameText.text = _health.EntityName.Value;
+        _healthBar.fillAmount = currentHealth / _health.MaxHealth.Value;
+        _healthText.text = $"{currentHealth}/{_health.MaxHealth.Value}";
     }
 
     public void Show()
