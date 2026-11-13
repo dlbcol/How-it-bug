@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6568814014432534504}
   - component: {fileID: 4073045331550645395}
   - component: {fileID: 4500549553753851200}
+  - component: {fileID: 3741215010620126106}
   - component: {fileID: 8029790295348012528}
   - component: {fileID: 5203105677859625416}
   m_Layer: 0
@@ -115,6 +116,33 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3741215010620126106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4385692865620307443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 2018525428
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  m_InScenePlacedDisabledByDefault: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  m_InScenePlaced: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &8029790295348012528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,6 +155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22413652a18b1be48b52dc51fa3ad2f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
+  ShowTopMostFoldoutHeaderGroup: 1
   Data: {fileID: 11400000, guid: ceac357c5bf3e1641a3a49872256943d, type: 2}
 --- !u!114 &5203105677859625416
 MonoBehaviour:
@@ -140,6 +169,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd4ac5f72e3bc024fb725b4ea84fc5a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
+  ShowTopMostFoldoutHeaderGroup: 1
+  CurrentHealth:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  MaxHealth:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  EntityName:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 
 --- !u!1001 &2833048473204376172
 PrefabInstance:
   m_ObjectHideFlags: 0

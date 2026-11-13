@@ -14,6 +14,7 @@ public class TMPspawner : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.T))
         {
+            enemyHealth = FindAnyObjectByType<Health>();
             if (enemyHealth != null)
             {
                 enemyHealth.TakeDamage(10);

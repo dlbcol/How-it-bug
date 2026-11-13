@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
 
-public class EnemyManager : MonoBehaviour
+public class EnemyManager : NetworkBehaviour
 {
     [SerializeField] private List<EnemyData> _enemiesData = new();
     [SerializeField] private int _poolSize = 10;
@@ -20,13 +21,15 @@ public class EnemyManager : MonoBehaviour
         SpawnEnemy(enemyData, new(0, 0, 0));
     }
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
         InitializePool();
     }
 
     private void InitializePool()
     {
+        if (!IsServer) return;
+
         foreach(EnemyData enemyData in _enemiesData)
         {
             Queue<GameObject> enemies = new();
@@ -50,11 +53,11 @@ public class EnemyManager : MonoBehaviour
 
     public void SpawnEnemy(EnemyData enemyData, Vector3 position)
     {
+        if (!IsServer) return;
         GameObject enemy;
         if (_enemiesPool[enemyData].Any())
         {
             enemy = _enemiesPool[enemyData].Dequeue();
-            enemy.SetActive(true);
         }
         else
         {
@@ -66,7 +69,7 @@ public class EnemyManager : MonoBehaviour
         _activeEnemies.Add(controller);
 
         controller.OnDeath += OnEnemyDeath;
-        controller.Initialize();
+        controller.Spawn();
     }
 
     public void OnEnemyDeath(EnemyController controller)
@@ -74,7 +77,7 @@ public class EnemyManager : MonoBehaviour
         controller.OnDeath -= OnEnemyDeath;
         _activeEnemies.Remove(controller);
 
-        controller.gameObject.SetActive(false);
+        controller.Despawn();
         _enemiesPool[controller.Data].Enqueue(controller.gameObject);
 
         SpawnCorpse(controller.Data, controller.gameObject.transform.position);
@@ -82,6 +85,7 @@ public class EnemyManager : MonoBehaviour
 
     public void SpawnCorpse(EnemyData enemyData, Vector3 position)
     {
+        if(!IsServer) return;
         GameObject corpse;
         if (_corpsesPool[enemyData].Any())
         {

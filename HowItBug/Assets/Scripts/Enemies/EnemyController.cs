@@ -1,31 +1,42 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : NetworkBehaviour
 {
 
     public EnemyData Data;
     public event Action<EnemyController> OnDeath;
 
     private Health _health;
+    private NetworkObject _networkObject;
 
     private void Awake()
     {
         _health = GetComponent<Health>();
+        _networkObject = GetComponent<NetworkObject>();
 
         _health.OnDeath += EnemyDied;
     }
 
-    private void EnemyDied() => OnDeath?.Invoke(this);
-
-    private void Start()
+    public void Spawn()
     {
-        Initialize();
+        gameObject.SetActive(true);
+        _networkObject.Spawn();
+        _health.Initialize(Data);
     }
 
-    public void Initialize()
+    public void Despawn()
     {
-        _health.Initialize(Data);
+        if (!IsServer) return;
+        _networkObject.Despawn(false);
+        gameObject.SetActive(false);
+    }
+
+    private void EnemyDied()
+    {
+        if (!IsServer) return;
+        OnDeath?.Invoke(this);
     }
 
 }
