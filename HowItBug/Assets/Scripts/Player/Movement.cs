@@ -1,120 +1,354 @@
+
 using Unity.Netcode;
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class Movement : NetworkBehaviour
 {
-    // Floats for the player's movement.
-    [SerializeField] private float speed = 5f;       // The speed at which the player walks.
-    [SerializeField] private float sprint = 8f;      // The speed at which the player sprints.
-    [SerializeField] private float jump = 2f;        // The height of the player's jump.
-    [SerializeField] private float gravity = 20f;    // The gravity applied to the player.
+    [Header("Movement")]
+    [SerializeField] private float speed = 5f;
+    [SerializeField] private float sprint = 8f;
+    [SerializeField] private float crouchSpeed = 2.5f;
 
-    // Floats for the player's mouse movement.
-    [SerializeField] private float sensitivity = 2f;         // The sensitivity of the player's mouse movement.
-    [SerializeField] private Transform camera;                // The player's camera.
-    [SerializeField] private float maxRotation = 90f;         // The maximum rotation of the player's camera.
+    [Header("Jumping & Gravity")]
+    [SerializeField] private float jump = 2f;
+    [SerializeField] private float gravity = 20f;
 
-    [SerializeField] private CharacterController controller;  // The player's character controller.
-    [SerializeField] private float verticalVelocity;          // The player's vertical velocity.
-    [SerializeField] private float rotationX;                 // The player's rotation on the X axis.
+    [Header("Mouse Look")]
+    [SerializeField] private float sensitivity = 2f;
+    [SerializeField] private Transform camera;
+    [SerializeField] private float maxRotation = 90f;
 
-    /// <summary>
-    /// Awake is called when the object is created.
-    /// </summary>
-    void Awake()
+    [Header("Crouching")]
+    [SerializeField] private float crouchingHeight = 1f;
+    [SerializeField] private float crouchTransitionSpeed = 8f;
+
+    [Header("Ground Detection")]
+    [SerializeField] private LayerMask groundMask = ~0;
+    [SerializeField] private float spawnGroundCheckDistance = 1.5f;
+
+    private CharacterController controller;
+
+    private float verticalVelocity;
+    private float rotationX;
+
+    private float standingHeight;
+    private Vector3 standingCenter;
+
+    private float standingCameraY;
+    private float crouchingCameraY;
+
+    private bool isCrouching;
+
+    private void Awake()
     {
-        controller = GetComponent<CharacterController>();     // Get the CharacterController component attached to the player.
+        controller = GetComponent<CharacterController>();
+
+        // Use the CharacterController's actual original dimensions.
+        standingHeight = controller.height;
+        standingCenter = controller.center;
+
+        if (camera != null)
+        {
+            standingCameraY = camera.localPosition.y;
+
+            crouchingCameraY =
+                standingCameraY - (standingHeight - crouchingHeight);
+        }
     }
 
-    /// <summary>
-    /// OnNetworkSpawn is called when the player is spawned by the NetworkManager.
-    /// </summary>
     public override void OnNetworkSpawn()
     {
-        if (IsOwner)                                          // Checks if this player object belongs to this client.
-        {
-            camera.gameObject.SetActive(true);                // Enables the camera for the local player.
+        if (camera != null)
+            camera.gameObject.SetActive(IsOwner);
 
-            Cursor.lockState = CursorLockMode.Locked;         // Lock the cursor to the center of the screen.
-            Cursor.visible = false;                           // Hide the cursor.
-        }
-        else
-        {
-            camera.gameObject.SetActive(false);               // Disables cameras belonging to other players.
-        }
+        if (!IsOwner)
+            return;
+
+        FixSpawnPosition();
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
-    /// <summary>
-    /// Update is called once per frame.
-    /// </summary>
-    void Update()
+    private void Update()
     {
-        if (!IsOwner)                                         // Stops this client from controlling player objects it does not own.
-        {
+        if (!IsSpawned || !IsOwner)
             return;
-        }
 
-        if (HowItBugSessionManager.PauseMenuOpen)            // Stops movement and camera controls while the pause menu is open.
-        {
+        if (HowItBugSessionManager.PauseMenuOpen)
             return;
-        }
 
-        Move();
         Look();
+        Crouch();
+        Move();
     }
 
     /// <summary>
-    /// Move calculates movement based on player input and applies it to the CharacterController.
+    /// Corrects the player position if the CharacterController
+    /// initially spawns partially inside the floor.
+    /// </summary>
+    private void FixSpawnPosition()
+    {
+        float bottomOffset =
+            standingCenter.y - (standingHeight / 2f);
+
+        float capsuleBottomY =
+            transform.TransformPoint(
+                new Vector3(0f, bottomOffset, 0f)
+            ).y;
+
+        Vector3 rayOrigin = transform.position +
+            Vector3.up * standingHeight;
+
+        float rayDistance =
+            standingHeight + spawnGroundCheckDistance;
+
+        RaycastHit[] hits = Physics.RaycastAll(
+            rayOrigin,
+            Vector3.down,
+            rayDistance,
+            groundMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        float closestFloorY = float.NegativeInfinity;
+
+        foreach (RaycastHit hit in hits)
+        {
+            // Ignore colliders belonging to this player.
+            if (hit.collider.transform.IsChildOf(transform))
+                continue;
+
+            // Only consider upward-facing surfaces.
+            if (hit.normal.y < 0.5f)
+                continue;
+
+            if (hit.point.y > closestFloorY)
+                closestFloorY = hit.point.y;
+        }
+
+        if (closestFloorY == float.NegativeInfinity)
+            return;
+
+        float penetration = closestFloorY - capsuleBottomY;
+
+        // Only correct an actual initial floor penetration.
+        if (penetration > 0.01f)
+        {
+            controller.enabled = false;
+
+            transform.position +=
+                Vector3.up * penetration;
+
+            controller.enabled = true;
+        }
+    }
+
+    /// <summary>
+    /// Handles walking, sprinting, jumping and gravity.
     /// </summary>
     private void Move()
     {
-        // Gets input from the player.
-        float x = Input.GetAxis("Horizontal");                // Gets horizontal input.
-        float z = Input.GetAxis("Vertical");                  // Gets vertical input.
+        float x = Input.GetAxisRaw("Horizontal");
+        float z = Input.GetAxisRaw("Vertical");
 
-        Vector3 move = transform.right * x + transform.forward * z; // Calculate the movement vector based on input.
+        Vector3 move =
+            transform.right * x +
+            transform.forward * z;
 
-        // Sprinting.
-        float currentSpeed = Input.GetKey(KeyCode.LeftShift) ? sprint : speed; // Ads sprinting by using the left shift key.
+        // Prevent faster diagonal movement.
+        move = Vector3.ClampMagnitude(move, 1f);
 
-        // Keeps the player on the ground.
-        if (controller.isGrounded)                            // Checks if the player is on the ground.
+        float currentSpeed = speed;
+
+        if (isCrouching)
         {
-            if (verticalVelocity < 0)                         // Checks if the player is falling.
-            {
-                verticalVelocity = -2f;                       // Sets the vertical velocity to a -2 to keep the player on the ground.
-            }
-
-            if (Input.GetButtonDown("Jump"))                  // Checks if the player jumping.
-            {
-                verticalVelocity = Mathf.Sqrt(jump * 2f * gravity); // Sets the vertical velocity to the jump height.
-            }
+            currentSpeed = crouchSpeed;
+        }
+        else if (Input.GetKey(KeyCode.LeftShift))
+        {
+            currentSpeed = sprint;
         }
 
-        // Gravity.
-        verticalVelocity -= gravity * Time.deltaTime;         // Applies gravity to the vertical velocity.
+        // Ground detection.
+        if (controller.isGrounded && verticalVelocity < 0f)
+        {
+            verticalVelocity = -2f;
+        }
 
-        // Move.
-        Vector3 velocity = move * currentSpeed;               // Calculates the velocity.
-        velocity.y = verticalVelocity;                        // Sets the vertical velocity to the velocity.
-        controller.Move(velocity * Time.deltaTime);           // Moves the player based on the velocity.
+        // Jump only while grounded and standing.
+        if (controller.isGrounded &&
+            !isCrouching &&
+            Input.GetButtonDown("Jump"))
+        {
+            verticalVelocity =
+                Mathf.Sqrt(jump * 2f * gravity);
+        }
+
+        // Apply gravity.
+        verticalVelocity -= gravity * Time.deltaTime;
+
+        Vector3 velocity = move * currentSpeed;
+        velocity.y = verticalVelocity;
+
+        controller.Move(velocity * Time.deltaTime);
+
+        // Stop upward velocity if we hit a ceiling.
+        if ((controller.collisionFlags & CollisionFlags.Above) != 0 &&
+            verticalVelocity > 0f)
+        {
+            verticalVelocity = 0f;
+        }
     }
 
     /// <summary>
-    /// Look handles the player's camera rotation based on mouse input.
+    /// Handles horizontal player rotation and vertical camera rotation.
     /// </summary>
     private void Look()
     {
-        // Takes mouse input from the player.
-        float x = Input.GetAxis("Mouse X") * sensitivity;     // Gets the mouse X input and multiplies it by the sensitivity of the mouse.
-        float y = Input.GetAxis("Mouse Y") * sensitivity;     // Gets the mouse Y input and multiplies it by the sensitivity of the mouse.
+        if (camera == null)
+            return;
 
-        // Rotate player left to right when turning the mouse left to right.
-        transform.Rotate(Vector3.up * x);                     // Rotates the player on the Y axis based on the mouse X input.
+        float x = Input.GetAxis("Mouse X") * sensitivity;
+        float y = Input.GetAxis("Mouse Y") * sensitivity;
 
-        // Rotate camera up/down.
-        rotationX -= y;                                       // Subtracts the mouse Y input from the rotationX.
-        rotationX = Mathf.Clamp(rotationX, -maxRotation, maxRotation); // Makes sure doesn't rotate past the max rotation.
-        camera.localRotation = Quaternion.Euler(rotationX, 0f, 0f);    // Sets the camera's rotation based on the rotationX.
+        // Rotate the player horizontally.
+        transform.Rotate(Vector3.up * x);
+
+        // Rotate the camera vertically.
+        rotationX -= y;
+
+        rotationX = Mathf.Clamp(
+            rotationX,
+            -maxRotation,
+            maxRotation
+        );
+
+        camera.localRotation =
+            Quaternion.Euler(rotationX, 0f, 0f);
+    }
+
+    /// <summary>
+    /// Handles crouching differently depending on whether
+    /// the player is grounded or airborne.
+    ///
+    /// Grounded: collider shrinks downward.
+    /// Airborne: collider shrinks upward.
+    /// </summary>
+    private void Crouch()
+    {
+        bool wantsToCrouch =
+            Input.GetKey(KeyCode.LeftControl);
+
+        // Prevent standing up underneath obstacles.
+        if (!wantsToCrouch && !CanStand())
+        {
+            wantsToCrouch = true;
+        }
+
+        isCrouching = wantsToCrouch;
+
+        float targetHeight = isCrouching
+            ? crouchingHeight
+            : standingHeight;
+
+        // Smoothly change collider height.
+        float newHeight = Mathf.MoveTowards(
+            controller.height,
+            targetHeight,
+            crouchTransitionSpeed * Time.deltaTime
+        );
+
+        // Difference between standing and current height.
+        float heightDifference =
+            standingHeight - newHeight;
+
+        Vector3 newCenter = standingCenter;
+
+        if (controller.isGrounded)
+        {
+            // GROUNDED:
+            // Keep the bottom of the collider fixed.
+            // The top moves downward.
+            newCenter.y -= heightDifference / 2f;
+        }
+        else
+        {
+            // AIRBORNE:
+            // Keep the top of the collider fixed.
+            // The bottom moves upward.
+            newCenter.y += heightDifference / 2f;
+        }
+
+        controller.height = newHeight;
+        controller.center = newCenter;
+
+        // Smoothly adjust camera height.
+        if (camera != null)
+        {
+            Vector3 cameraPosition =
+                camera.localPosition;
+
+            float targetCameraY = isCrouching
+                ? crouchingCameraY
+                : standingCameraY;
+
+            cameraPosition.y = Mathf.MoveTowards(
+                cameraPosition.y,
+                targetCameraY,
+                crouchTransitionSpeed * Time.deltaTime
+            );
+
+            camera.localPosition = cameraPosition;
+        }
+    }
+
+    /// <summary>
+    /// Checks whether there is enough space to stand up.
+    /// </summary>
+    private bool CanStand()
+    {
+        if (controller.height >= standingHeight - 0.01f)
+            return true;
+
+        float radius = controller.radius * 0.95f;
+
+        // Calculate the intended standing capsule.
+        Vector3 worldCenter =
+            transform.TransformPoint(standingCenter);
+
+        float halfSegment =
+            Mathf.Max(0f, standingHeight / 2f - radius);
+
+        Vector3 bottomSphere =
+            worldCenter - transform.up * halfSegment;
+
+        Vector3 topSphere =
+            worldCenter + transform.up * halfSegment;
+
+        Collider[] overlaps = Physics.OverlapCapsule(
+            bottomSphere,
+            topSphere,
+            radius,
+            groundMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        foreach (Collider hit in overlaps)
+        {
+            // Ignore our own colliders.
+            if (hit.transform.IsChildOf(transform))
+                continue;
+
+            // Ignore surfaces below our standing capsule's feet.
+            if (hit.bounds.max.y <=
+                bottomSphere.y - radius + 0.02f)
+                continue;
+
+            return false;
+        }
+
+        return true;
     }
 }
