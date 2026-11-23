@@ -1,32 +1,44 @@
 using System;
 using UnityEngine;
+using Unity.Netcode;
 
-public class EnemyCorpse : MonoBehaviour
+public class EnemyCorpse : NetworkBehaviour
 {
     // TODO: Stop timer when player picks up corpse
     // TODO: Reset timer when player drops corpse
 
     public EnemyData Data;
+    public event Action<EnemyCorpse> OnCorpseDespawned;
 
     [SerializeField] private float toppleForce = 2f;
 
-    public event Action<EnemyCorpse> OnCorpseDespawned;
-
     private Timer _timer;
     private Rigidbody _rigidbody;
+    private NetworkObject _networkObject;
 
     private void Awake()
     {
         _timer = GetComponent<Timer>();
         _rigidbody = GetComponent<Rigidbody>();
+        _networkObject = GetComponent<NetworkObject>();
     }
 
-    public void Initialize()
+    public void Spawn()
     {
+        gameObject.SetActive(true);
+        _networkObject.Spawn();
+
         _timer.StartTimer(Data.CorpseLifeTime);
         _timer.OnTimerFinished += CorpseDespawned;
-
         ToppleOver();
+    }
+
+    public void Despawn()
+    {
+        if (!IsServer) return;
+
+        _networkObject.Despawn(false);
+        gameObject.SetActive(false);
     }
 
     /// <summary>

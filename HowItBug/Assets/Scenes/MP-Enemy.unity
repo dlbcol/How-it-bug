@@ -746,6 +746,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: NetworkManager
       objectReference: {fileID: 0}
+    - target: {fileID: 5437316187694006199, guid: 3faece0f53721fa4e8a61b6c119799d0, type: 3}
+      propertyPath: NetworkConfig.Prefabs.NetworkPrefabsLists.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5437316187694006199, guid: 3faece0f53721fa4e8a61b6c119799d0, type: 3}
+      propertyPath: 'NetworkConfig.Prefabs.NetworkPrefabsLists.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: c251883ae67cda142a48c89429543d4c, type: 2}
+    - target: {fileID: 5437316187694006199, guid: 3faece0f53721fa4e8a61b6c119799d0, type: 3}
+      propertyPath: 'NetworkConfig.Prefabs.NetworkPrefabsLists.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: c251883ae67cda142a48c89429543d4c, type: 2}
     - target: {fileID: 8770319839690125186, guid: 3faece0f53721fa4e8a61b6c119799d0, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0

@@ -18,7 +18,7 @@ public class EnemyManager : NetworkBehaviour
 
     public void TestSpawn(EnemyData enemyData)
     {
-        SpawnEnemy(enemyData, new(0, 0, 0));
+        SpawnEnemy(enemyData, new(0, 0.5f, 0));
     }
 
     public override void OnNetworkSpawn()
@@ -90,7 +90,6 @@ public class EnemyManager : NetworkBehaviour
         if (_corpsesPool[enemyData].Any())
         {
             corpse = _corpsesPool[enemyData].Dequeue();
-            corpse.SetActive(true);
         }
         else
         {
@@ -99,14 +98,14 @@ public class EnemyManager : NetworkBehaviour
 
         corpse.transform.position = position;
         EnemyCorpse corpseController = corpse.GetComponent<EnemyCorpse>();
-        corpseController.Initialize();
+        corpseController.Spawn();
         corpseController.OnCorpseDespawned += OnCorpseDespawned;
     }
 
     public void OnCorpseDespawned(EnemyCorpse corpse)
     {
         corpse.OnCorpseDespawned -= OnCorpseDespawned;
-        corpse.gameObject.SetActive(false);
+        corpse.Despawn();
         _corpsesPool[corpse.Data].Enqueue(corpse.gameObject);
     }
 
