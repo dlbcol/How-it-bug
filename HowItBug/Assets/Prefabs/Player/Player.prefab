@@ -149,11 +149,12 @@ GameObject:
   - component: {fileID: 7930353084898351233}
   - component: {fileID: 3693706074200544252}
   - component: {fileID: 2724559449782586954}
+  - component: {fileID: 629257258136178272}
   - component: {fileID: 8875972100289910771}
   - component: {fileID: 4295858316121336083}
-  - component: {fileID: 629257258136178272}
   - component: {fileID: 761254421072525}
   - component: {fileID: -2153918334816744230}
+  - component: {fileID: 1461634037579944732}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -170,7 +171,7 @@ Transform:
   m_GameObject: {fileID: 1183055925335466268}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -257,6 +258,31 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!143 &629257258136178272
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1183055925335466268}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.35
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!114 &8875972100289910771
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -330,31 +356,6 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!143 &629257258136178272
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1183055925335466268}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &761254421072525
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -370,14 +371,18 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   speed: 5
   sprint: 8
+  crouchSpeed: 2.5
   jump: 2
   gravity: 20
   sensitivity: 2
   camera: {fileID: 1742489936129056632}
   maxRotation: 90
-  controller: {fileID: 629257258136178272}
-  verticalVelocity: 0
-  rotationX: 0
+  crouchingHeight: 1
+  crouchTransitionSpeed: 8
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  spawnGroundCheckDistance: 1.5
 --- !u!114 &-2153918334816744230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,3 +399,33 @@ MonoBehaviour:
   pushableLayers:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &1461634037579944732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1183055925335466268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: 
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
